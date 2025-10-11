@@ -1,15 +1,18 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Play.Common.Identity;
 
 public static class Extensions
 {
-    public static AuthenticationBuilder AddJwtBearerAuthentication(this IServiceCollection services)
+    public static WebApplicationBuilder AddJwtBearerAuthentication(this WebApplicationBuilder builder)
     {
-        return services.ConfigureOptions<ConfigureJwtBearerOptions>()
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
+            
+        return builder;
     }
 }

@@ -6,11 +6,11 @@ using Play.Common.Settings;
 
 namespace Play.Common.Identity;
 
-public class ConfigureJwtBearerOptions(IConfiguration configuration) : IConfigureOptions<JwtBearerOptions>
+public class ConfigureJwtBearerOptions(IConfiguration configuration) : IConfigureNamedOptions<JwtBearerOptions>
 {
     private readonly IConfiguration _configuration = configuration;
 
-    public void Configure(string name, JwtBearerOptions options)
+    public void Configure(string? name, JwtBearerOptions options)
     {
         if (name == JwtBearerDefaults.AuthenticationScheme)
         {
@@ -29,6 +29,6 @@ public class ConfigureJwtBearerOptions(IConfiguration configuration) : IConfigur
 
     public void Configure(JwtBearerOptions options)
     {
-        Configure(Options.DefaultName, options)
-;    }
+        Configure(Options.DefaultName, options);
+    }
 }
