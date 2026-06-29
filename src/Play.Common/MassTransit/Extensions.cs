@@ -9,6 +9,20 @@ namespace Play.Common.MassTransit;
 
 public static class Extensions
 {
+    public static IServiceCollection AddMassTransitWithRabbitMQ(
+        this IServiceCollection services,
+        Action<IRetryConfigurator>? configureRetries = null)
+    {
+        services.AddMassTransit(configure =>
+        {
+            configure.AddConsumers(Assembly.GetEntryAssembly());
+
+            UsingPlayEconomyRabbitMQ(configure, configureRetries);
+        });
+
+        return services;
+    }
+    
     public static WebApplicationBuilder AddMassTransitWithRabbitMQ(
         this WebApplicationBuilder builder,
         Action<IRetryConfigurator>? configureRetries = null)
