@@ -7,6 +7,15 @@ namespace Play.Common.Identity;
 
 public static class Extensions
 {
+    public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services)
+    {
+        services.ConfigureOptions<ConfigureJwtBearerOptions>();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer();
+            
+        return services;
+    }
+    
     public static WebApplicationBuilder AddJwtBearerAuthentication(this WebApplicationBuilder builder)
     {
         builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();

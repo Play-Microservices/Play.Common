@@ -6,7 +6,7 @@ dotnet build
 
 ## Pack library and export to output folder
 dotnet pack -o ../../../packages/
-dotnet pack -o ../../../packages/ -p PackageVersion=1.0.9
+dotnet pack -o ../../../packages/ -p PackageVersion=1.0.10
 
 ## Specify dotnet local Nuget Package source path
 dotnet nuget add source "<Absolute_path_to_package_folder>" -n PlayEconomy
