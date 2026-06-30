@@ -44,6 +44,19 @@ public static class Extensions
 
         return builder;
     }
+    
+
+    public static IServiceCollection AddMongoRepository<TEntity>(this IServiceCollection services, string collectionName)  
+        where TEntity : IEntity
+    {
+        services.AddSingleton<IRepository<TEntity>, MongoRepository<TEntity>>(serviceProvider =>
+        {
+            var database = serviceProvider.GetService<IMongoDatabase>();
+            return new MongoRepository<TEntity>(database!, collectionName);
+        });
+
+        return services;
+    }
 
     public static WebApplicationBuilder AddMongoRepository<TEntity>(this WebApplicationBuilder builder, string collectionName)  
         where TEntity : IEntity
