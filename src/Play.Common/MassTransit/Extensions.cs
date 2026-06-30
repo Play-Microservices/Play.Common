@@ -1,5 +1,8 @@
 using System.Reflection;
+using GreenPipes;
+using GreenPipes.Configurators;
 using MassTransit;
+using MassTransit.Definition;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
