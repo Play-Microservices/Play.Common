@@ -8,23 +8,41 @@ namespace Play.Common.Identity;
 
 public class ConfigureJwtBearerOptions(IConfiguration configuration) : IConfigureNamedOptions<JwtBearerOptions>
 {
+    private const string AccessTokenParameter = "access_token";
+    private const string MessageHubPath = "/messageHub";
+
     private readonly IConfiguration _configuration = configuration;
 
     public void Configure(string? name, JwtBearerOptions options)
     {
-        if (name == JwtBearerDefaults.AuthenticationScheme)
+        if (name != JwtBearerDefaults.AuthenticationScheme) return;
+        
+        var serviceSettings = _configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>()!;
+        options.Authority = serviceSettings.Authority;
+        options.Audience = serviceSettings.ServiceName;
+        options.MapInboundClaims = false;
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            var serviceSettings = _configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>()!;
+            NameClaimType = "name",
+            RoleClaimType = "role"
+        };
 
-            options.Authority = serviceSettings.Authority;
-            options.Audience = serviceSettings.ServiceName;
-            options.MapInboundClaims = false;
-            options.TokenValidationParameters = new TokenValidationParameters
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
             {
-                NameClaimType = "name",
-                RoleClaimType = "role"
-            };
-        }
+                var accessToken = context.Request.Query[AccessTokenParameter];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken)
+                    && path.StartsWithSegments(MessageHubPath))
+                {
+                    context.Token = accessToken;
+                }
+                
+                return Task.CompletedTask;
+            }
+        };
     }
 
     public void Configure(JwtBearerOptions options)
