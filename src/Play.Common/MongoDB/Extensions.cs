@@ -18,7 +18,7 @@ public static class Extensions
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
 
-        services.AddSingleton(serviceProvider => 
+        services.AddSingleton(_ => 
         {
             var serviceSettings = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
             var mongoDbSettings = configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
@@ -34,7 +34,7 @@ public static class Extensions
         BsonSerializer.RegisterSerializer(new GuidSerializer(BsonType.String));
         BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(BsonType.String));
 
-        builder.Services.AddSingleton(serviceProvider => 
+        builder.Services.AddSingleton(_ => 
         {
             var serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
             var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
@@ -61,7 +61,6 @@ public static class Extensions
     public static WebApplicationBuilder AddMongoRepository<TEntity>(this WebApplicationBuilder builder, string collectionName)  
         where TEntity : IEntity
     {
-        
         builder.Services.AddSingleton<IRepository<TEntity>, MongoRepository<TEntity>>(serviceProvider =>
         {
             var database = serviceProvider.GetService<IMongoDatabase>();
