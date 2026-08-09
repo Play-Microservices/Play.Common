@@ -3,7 +3,6 @@ using GreenPipes;
 using GreenPipes.Configurators;
 using MassTransit;
 using MassTransit.Definition;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Play.Common.Settings;
@@ -35,26 +34,6 @@ public static class Extensions
         return services;
     }
     
-    public static WebApplicationBuilder AddMassTransitWithMessageBroker(
-        this WebApplicationBuilder builder,
-        IConfiguration configuration,
-        Action<IRetryConfigurator>? configureRetries = null)
-    {
-        var serviceSetting = configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>()!;
-        switch (serviceSetting.MessageBroker.ToUpper())
-        {
-            case ServiceBus:
-                builder.AddMassTransitWithServiceBus(configureRetries);
-                break;
-            case RabbitMq:
-            default:
-                builder.AddMassTransitWithRabbitMQ(configureRetries);
-                break;
-        }
-
-        return builder;
-    }
-    
     public static IServiceCollection AddMassTransitWithRabbitMQ(
         this IServiceCollection services,
         Action<IRetryConfigurator>? configureRetries = null)
@@ -68,18 +47,6 @@ public static class Extensions
         return services;
     }
     
-    public static WebApplicationBuilder AddMassTransitWithRabbitMQ(
-        this WebApplicationBuilder builder,
-        Action<IRetryConfigurator>? configureRetries = null)
-    {
-        builder.Services.AddMassTransit(configure =>
-        {
-            configure.AddConsumers(Assembly.GetEntryAssembly());
-            configure.UsingPlayEconomyRabbitMQ(configureRetries);
-        });
-
-        return builder;
-    }
     public static IServiceCollection AddMassTransitWithServiceBus(
         this IServiceCollection services,
         Action<IRetryConfigurator>? configureRetries = null)
@@ -89,21 +56,9 @@ public static class Extensions
             configure.AddConsumers(Assembly.GetEntryAssembly());
             configure.UsingPlayEconomyServiceBus(configureRetries);
         });
+        services.AddMassTransitHostedService();
 
         return services;
-    }
-    
-    public static WebApplicationBuilder AddMassTransitWithServiceBus(
-        this WebApplicationBuilder builder,
-        Action<IRetryConfigurator>? configureRetries = null)
-    {
-        builder.Services.AddMassTransit(configure =>
-        {
-            configure.AddConsumers(Assembly.GetEntryAssembly());
-            configure.UsingPlayEconomyServiceBus(configureRetries);
-        });
-
-        return builder;
     }
 
     public static void UsingPlayEconomyMessageBroker(
